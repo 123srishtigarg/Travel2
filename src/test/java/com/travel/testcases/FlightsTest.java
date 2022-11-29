@@ -6,13 +6,11 @@ import com.travel.pageObjects.Flights;
 import org.testng.annotations.Test;
 
 
-public class StandAloneTest extends TestBase {
+public class FlightsTest extends TestBase {
 
     @Test
     public void bookFlight() throws Exception {
 
-
-        //flight page object
         Flights flights = new Flights(driver);
         flights.clickOnMenu(flights.flightMenu);
         flights.selectTypeOfTrip(flights.roundTrip);
@@ -29,7 +27,6 @@ public class StandAloneTest extends TestBase {
         flights.selectRoundTripFlight(1,fromCity, destCity);
         flights.clickOnBookButton();
         flights.clickOnContinueButton();
-
 
     }
 }
