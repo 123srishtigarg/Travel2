@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <!--thread-count = 2 an attribute can be added to test tag, i.e max 2 test methods can be run from this test tag.
+    -->
+    <test verbose="2" preserve-order="true" name="Flight Booking Tests">
+        <classes>
+            <class name="com.travel.testcases.FlightsTest"><methods><include name="bookFlight"/></methods></class>
+        </classes>
+    </test>
+
+    <test verbose="2" preserve-order="true" name="Hotel Booking Tests">
+        <classes>
+            <class name="com.travel.testcases.HotelsTest"><methods><include name="bookHotel"/></methods></class>
+        </classes>
+    </test>
+</suite>

@@ -7,7 +7,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Flights extends WebBrowserUtility {
     WebDriver driver;
@@ -45,6 +47,9 @@ public class Flights extends WebBrowserUtility {
     @FindBy(xpath = "//*[@id='toCity']")
     public WebElement toInput;
 
+    @FindBy(xpath = "//*[@for='departure']")
+    public WebElement departureDate;
+
     @FindBy(xpath = "//*[contains(@class, 'DayPicker') and @aria-disabled='false']")
     public List<WebElement> currentFutureDates;
 
@@ -69,17 +74,36 @@ public class Flights extends WebBrowserUtility {
     @FindBy(xpath = "//*[contains(@class, 'lato-black button')]")
     public WebElement continueButton;
 
-    @FindBy(xpath = "//*[@class='pageHeader']//h2")
-    public WebElement flightSummaryHeaderTitle;
-
-    @FindBy(xpath = "//*[@class='otherList']//button")
+    @FindBy(xpath = "//*[@class='addTravellerBtn']")
     public WebElement addNewAdultButton;
+
+    @FindBy(xpath = "//*[@data-cy='outsideModal']")
+    public WebElement outsideModal;
+
+    @FindBy(xpath = "//*[@class='dayPickerFlightWrap']")
+    public WebElement dayPicker;
+
+    @FindBy(xpath = "//*[contains(@class, 'headerTitle')]")
+    public WebElement completeBookingPageHeader;
+
+    @FindBy(xpath = "//*[@placeholder='First & Middle Name']")
+    public WebElement firstMiddleNameInput;
+
+    @FindBy(xpath = "//*[@placeholder='Last Name']")
+    public WebElement lastNameInput;
+
+    @FindBy(xpath = "//*[@value='FEMALE']")
+    public WebElement femaleRadioButton;
+
+    @FindBy(xpath = "//*[@value='MALE']")
+    public WebElement maleRadioButton;
+
 
 
     //click on flights
-    public void clickOnMenu(WebElement menu){
-        visibilityOf(menu);
-        click(menu, false);
+    public void clickOnFlightMenu(){
+        visibilityOf(flightMenu);
+        click(flightMenu, false);
     }
 
     //click on round trip
@@ -89,12 +113,12 @@ public class Flights extends WebBrowserUtility {
     }
 
     //select from sourceCity
-    public WebElement selectFromCity(String fromCity) throws InterruptedException {
+    public WebElement selectFromCity(String fromCityName) throws InterruptedException {
         WebElement cityResult;
 
-        visibilityOf(this.fromCity);
-        click(this.fromCity, false);
-        String text = clearAndInsertText(fromDropDownSearchBox, fromCity);
+        visibilityOf(fromCity);
+        click(fromCity, false);
+        String text = clearAndInsertText(fromDropDownSearchBox, fromCityName);
         Thread.sleep(1000);
         cityResult =getListOfCities().stream().filter(option-> getElementAttribute(option, "textContent").contains(text)).findFirst().orElse(null);
         click(cityResult, false);
@@ -110,27 +134,36 @@ public class Flights extends WebBrowserUtility {
 
     //datepicker
     public void selectCalDate(int index){
+
+        if(visibilityOf(dayPicker)== null){
+            visibilityOf(departureDate);
+            click(departureDate, false);
+        }
         WebElement date = currentFutureDates.get(index);
         visibilityOf(date);
         click(date, false);
     }
 
     //select destination city
-    public WebElement selectToCity(String destCity){
+    public String selectToCity(String destCity){
         WebElement cityResult = null;
         String destInputText = getElementAttribute(toInput, "value");
         String fromInputText = getElementAttribute(fromInput, "value");
+        System.out.println("dest: "+destInputText);
+        System.out.println("from: "+fromInputText);
 
-        while(destInputText.equalsIgnoreCase(fromInputText)){
-            visibilityOf(toCity);
-            click(toCity, false);
-            String text = clearAndInsertText(toDropDownSearchBox, destCity);
-            cityResult =getListOfCities().stream().filter(option-> getElementAttribute(option, "textContent").contains(text)).findFirst().orElse(null);
-            click(cityResult, false);
-            destInputText = getElementAttribute(toInput, "value");
+        if(!destInputText.equalsIgnoreCase(destCity)){
+            while(destInputText.equalsIgnoreCase(fromInputText)){
+                visibilityOf(toCity);
+                click(toCity, false);
+                String text = clearAndInsertText(toDropDownSearchBox, destCity);
+                cityResult =getListOfCities().stream().filter(option-> getElementAttribute(option, "textContent").contains(text)).findFirst().orElse(null);
+                click(cityResult, false);
+                destInputText = getElementAttribute(toInput, "value");
+            }
         }
 
-        return cityResult;
+        return destInputText;
     }
 
     //select passengers and class
@@ -195,5 +228,63 @@ public class Flights extends WebBrowserUtility {
         visibilityOf(continueButton);
         click(continueButton, false);
     }
+
+    public void validatePageHeader(){
+
+        childWindowHandles();
+        visibilityOf(completeBookingPageHeader);
+        String pageHeader = getElementText(completeBookingPageHeader);
+        System.out.println("The web page header of child window is:" + pageHeader);
+        if (pageHeader.equals("Complete your booking")) {
+            System.out.println("The web page header of child window is:" + pageHeader);
+        }
+    }
+
+    public void addNewAdult(String firstName, String lastName, String gender){
+
+            clickOnAddNewAdult();
+            enterFirstMiddleName(firstName);
+            enterLastName(lastName);
+            selectGender(gender);
+    }
+
+    public void clickOnAddNewAdult(){
+        visibilityOf(addNewAdultButton);
+        click(addNewAdultButton, true);
+    }
+
+    public void enterFirstMiddleName(String firstName){
+        visibilityOf(firstMiddleNameInput);
+        clearAndInsertText(firstMiddleNameInput, firstName);
+        getElementText(firstMiddleNameInput);
+    }
+
+    public void enterLastName(String lastName){
+        visibilityOf(lastNameInput);
+        clearAndInsertText(lastNameInput, lastName);
+        getElementText(lastNameInput);
+    }
+
+    public void selectGender(String gender){
+      //  visibilityOf(gender);
+     WebElement flag = gender.equalsIgnoreCase("FEMALE") ? click(femaleRadioButton, false) : click(maleRadioButton, false);
+
+    }
+
+   /* public void getPassDetails(String firstName, String lastName, String gender){
+       // Map<String, Map<String, String>> outerMap = new HashMap<>();
+
+        for(String outerKey: outerKeys){
+            Map<String, String> temp = new HashMap<>();
+            for (String key : innerMap.keySet()) {
+                temp.put(key, innerMap.get(key));
+                outerMap.put(outerKey, temp);
+            }
+
+        }
+        System.out.println(outerMap.entrySet());
+
+    }*/
+
 
 }

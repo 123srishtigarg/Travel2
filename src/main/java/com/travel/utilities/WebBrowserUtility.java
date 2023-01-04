@@ -5,7 +5,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class WebBrowserUtility {
@@ -86,7 +88,7 @@ public class WebBrowserUtility {
                 System.out.println("Web element { " + myElementText + " } is visible.");
             }
         } catch (StaleElementReferenceException | NoSuchElementException e) {
-            System.out.println();
+            System.out.println("{ visibilityOf } error message: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("{ visibilityOf } error message: " + e.getMessage());
         }
@@ -183,4 +185,32 @@ public class WebBrowserUtility {
         return result;
     }
 
+    public String getMainWindowHandle(){
+        String mainWindow = driver.getWindowHandle();
+        System.out.println("Main window handle is " + mainWindow);
+
+        return mainWindow;
+    }
+
+    public String childWindowHandles() {
+        String childWindow = null;
+        try {
+
+            Set<String> s1 = driver.getWindowHandles();
+            System.out.println("Child window handles are: " + s1);
+            Iterator<String> i1 = s1.iterator();
+
+            while (i1.hasNext()) {
+                childWindow = i1.next();
+                if (!getMainWindowHandle().equalsIgnoreCase(childWindow)) {
+                    driver.switchTo().window(childWindow);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return childWindow;
+    }
 }

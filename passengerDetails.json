@@ -1,0 +1,19 @@
+[
+  {
+    "firstName" : "Amit",
+    "lastName" : "Badhana",
+    "gender" : "MALE"
+  },
+
+  {
+    "firstName" : "Vijeta",
+    "lastName" : "Dholakia",
+    "gender" : "FEMALE"
+  },
+
+  {
+    "firstName" : "Rahul",
+    "lastName" : "Dixit",
+    "gender" : "MALE"
+  }
+]
